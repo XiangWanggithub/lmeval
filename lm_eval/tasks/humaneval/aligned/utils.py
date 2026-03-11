@@ -110,12 +110,11 @@ def extract_code(completion: str) -> str:
             if not code:
                 code = matches[0][1]
         else:
-            # Stage 3: heuristic — detect def/class patterns
-            heuristic_matches = _HEURISTIC_PATTERN.findall(completion)
-            if heuristic_matches:
-                code = heuristic_matches[0]
-            else:
-                code = completion
+            # Stage 3: bare code — use as-is
+            # No fenced blocks found. After channel stripping, the output
+            # is clean Python code. The old heuristic regex failed on blank
+            # lines within function bodies. Just use the full text.
+            code = completion
 
     code = code.replace("\r", "")
 
