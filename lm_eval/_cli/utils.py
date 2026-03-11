@@ -18,7 +18,7 @@ def try_parse_json(value: str | dict[str, Any] | None) -> str | dict[str, Any] |
     try:
         return json.loads(value)
     except json.JSONDecodeError:
-        if "{" in value:
+        if value.strip().startswith("{"):
             raise ValueError(
                 f"Invalid JSON: {value}. Hint: Use double quotes for JSON strings."
             ) from None
@@ -92,17 +92,24 @@ def check_argument_types(parser: argparse.ArgumentParser) -> None:
             continue
 
 
-def handle_cli_value_string(arg: str) -> bool | int | float | str:
+def handle_cli_value_string(arg: str) -> bool | int | float | dict | str:
     if arg.lower() == "true":
         return True
     elif arg.lower() == "false":
         return False
     elif arg.isnumeric():
         return int(arg)
+    if arg.startswith("{"):
+        try:
+            return json.loads(arg)
+        except json.JSONDecodeError:
+            pass
     try:
         return float(arg)
     except ValueError:
         try:
+            # ast.literal_eval is safe — only parses literals (strings, numbers,
+            # tuples, lists, dicts, booleans, None), not arbitrary code.
             return ast.literal_eval(arg)
         except (ValueError, SyntaxError):
             return arg
