@@ -1,0 +1,37 @@
+task: mbpp_plus_aligned
+dataset_path: evalplus/mbppplus
+dataset_name: null
+unsafe_code: true
+output_type: generate_until
+test_split: test
+
+doc_to_text: "You are an expert Python programmer, and here is your task: {{prompt if prompt is defined else text}} Your code should pass these tests:\n\n{% for test in test_list %}{{test}}\n{% endfor %}"
+doc_to_target: "{% for test in test_list %}{{test}}\n{% endfor %}"
+target_delimiter: ""
+
+metric_list:
+  - metric: !function utils.pass_at_1
+    aggregation: mean
+    higher_is_better: true
+
+filter_list:
+  - name: "extract_code"
+    filter:
+      - function: "custom"
+        filter_fn: !function utils.build_predictions
+
+generation_kwargs:
+  until:
+    - "</s>"
+    - "<|im_end|>"
+    - "<|eot_id|>"
+    - "<|endoftext|>"
+    - "<|return|>"
+  max_gen_toks: 2048
+  do_sample: false
+  temperature: 0
+
+num_fewshot: 0
+
+metadata:
+  version: 1.0
