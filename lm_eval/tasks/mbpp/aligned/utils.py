@@ -6,6 +6,7 @@ Implements evalscope's 3-stage code extraction pipeline:
 3. Heuristic extraction (detect def/class patterns)
 
 Plus post-processing: strip [DONE], stop at \\nassert/\\n\"\"\", remove __main__.
+Channel-aware: strips GPT-OSS analysis channel before code extraction.
 """
 
 import re
@@ -35,6 +36,32 @@ def pass_at_1(
         predictions=predictions,
         k=[1],
     )[0]["pass@1"]
+
+
+# ---------------------------------------------------------------------------
+# GPT-OSS channel stripping (same as IFEval aligned)
+# ---------------------------------------------------------------------------
+
+_FINAL_CHANNEL_RE = re.compile(
+    r"<\|channel\|>final<\|message\|>(.*)",
+    re.DOTALL,
+)
+_TRAILING_SPECIAL_RE = re.compile(
+    r"<\|(end|start|channel|message|return|im_end|endoftext|eot_id)\|>.*$",
+    re.DOTALL,
+)
+
+
+def extract_final_channel(response: str) -> str:
+    """Extract 'final' channel content from GPT-OSS multi-channel output."""
+    m = _FINAL_CHANNEL_RE.search(response)
+    if m:
+        content = m.group(1)
+        content = _TRAILING_SPECIAL_RE.sub("", content)
+        return content.strip()
+    if "<|channel|>analysis" in response:
+        return ""
+    return response
 
 
 # ---------------------------------------------------------------------------
@@ -114,4 +141,4 @@ def extract_code(completion: str) -> str:
 
 def build_predictions(resps: list[list[str]], docs: list[dict]) -> list[list[str]]:
     """Filter function for lm-eval: extract code from each response."""
-    return [[extract_code(r) for r in resp] for resp in resps]
+    return [[extract_code(extract_final_channel(r)) for r in resp] for resp, doc in zip(resps, docs)]

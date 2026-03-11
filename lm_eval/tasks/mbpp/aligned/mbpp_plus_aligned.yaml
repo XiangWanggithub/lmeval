@@ -27,7 +27,7 @@ generation_kwargs:
     - "<|eot_id|>"
     - "<|endoftext|>"
     - "<|return|>"
-  max_gen_toks: 2048
+  max_gen_toks: 32768
   do_sample: false
   temperature: 0
 
