@@ -4,7 +4,7 @@ aggregate_metric_list:
   weight_by_size: true
 group: bbh_aligned
 metadata:
-  version: 1.0
+  version: 2.0
 task:
 - bbh_aligned_boolean_expressions
 - bbh_aligned_causal_judgement
