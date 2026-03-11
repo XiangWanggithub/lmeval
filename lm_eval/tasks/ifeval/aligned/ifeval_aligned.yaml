@@ -19,13 +19,7 @@ generation_kwargs:
   temperature: 0
   max_gen_toks: 32768
 
-# Strip GPT-OSS analysis channel before scoring
-filter_list:
-  - name: "strip_channel"
-    filter:
-      - function: "custom"
-        filter_fn: !function utils.strip_channel_tags
-
+# Channel stripping done inside process_results
 process_results: !function utils.process_results
 
 metric_list:

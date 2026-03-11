@@ -175,6 +175,9 @@ def process_results(doc, results):
     )
     response = results[0]
 
+    # Strip GPT-OSS analysis channel before scoring
+    response = extract_final_channel(response)
+
     out_strict = test_instruction_following_strict(inp, response)
     out_loose = test_instruction_following_loose(inp, response)
 
