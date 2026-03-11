@@ -1,0 +1,10 @@
+dataset_name: business_ethics
+description: 'The following are multiple choice questions (with answers) about business
+  ethics.
+
+
+  '
+include: _default_template_yaml
+tag: mmlu_redux_other_aligned
+task: mmlu_redux_business_ethics_aligned
+task_alias: business_ethics

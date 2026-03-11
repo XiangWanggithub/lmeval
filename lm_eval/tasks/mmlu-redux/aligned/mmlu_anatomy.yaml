@@ -1,0 +1,9 @@
+dataset_name: anatomy
+description: 'The following are multiple choice questions (with answers) about anatomy.
+
+
+  '
+include: _default_template_yaml
+tag: mmlu_redux_stem_aligned
+task: mmlu_redux_anatomy_aligned
+task_alias: anatomy

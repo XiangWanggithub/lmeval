@@ -1,0 +1,31 @@
+dataset_path: "fxmarty/mmlu-redux-2.0-ok"
+test_split: test
+dataset_kwargs:
+  trust_remote_code: true
+
+output_type: generate_until
+
+doc_to_text: "Answer the following multiple choice question. The last line of your response should be of the following format: 'ANSWER: [LETTER]' (without quotes) where [LETTER] is one of A,B,C,D. Think step by step before answering.\n\n{{question.strip()}}\n\nA) {{choices[0]}}\nB) {{choices[1]}}\nC) {{choices[2]}}\nD) {{choices[3]}}"
+doc_to_target: "{{['A','B','C','D'][answer]}}"
+
+process_results: !function utils.process_results
+
+generation_kwargs:
+  until:
+    - "Question:"
+    - "</s>"
+    - "<|im_end|>"
+    - "<|eot_id|>"
+    - "<|endoftext|>"
+    - "<|return|>"
+  do_sample: false
+  temperature: 0
+  max_gen_toks: 4096
+
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+
+metadata:
+  version: 1.0

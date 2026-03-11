@@ -1,0 +1,10 @@
+dataset_name: college_medicine
+description: 'The following are multiple choice questions (with answers) about college
+  medicine.
+
+
+  '
+include: _default_template_yaml
+tag: mmlu_redux_other_aligned
+task: mmlu_redux_college_medicine_aligned
+task_alias: college_medicine

@@ -1,0 +1,9 @@
+dataset_name: virology
+description: 'The following are multiple choice questions (with answers) about virology.
+
+
+  '
+include: _default_template_yaml
+tag: mmlu_redux_other_aligned
+task: mmlu_redux_virology_aligned
+task_alias: virology

@@ -1,0 +1,9 @@
+dataset_name: prehistory
+description: 'The following are multiple choice questions (with answers) about prehistory.
+
+
+  '
+include: _default_template_yaml
+tag: mmlu_redux_humanities_aligned
+task: mmlu_redux_prehistory_aligned
+task_alias: prehistory

@@ -1,0 +1,10 @@
+dataset_name: high_school_computer_science
+description: 'The following are multiple choice questions (with answers) about high
+  school computer science.
+
+
+  '
+include: _default_template_yaml
+tag: mmlu_redux_stem_aligned
+task: mmlu_redux_high_school_computer_science_aligned
+task_alias: high_school_computer_science

@@ -1,0 +1,10 @@
+dataset_name: elementary_mathematics
+description: 'The following are multiple choice questions (with answers) about elementary
+  mathematics.
+
+
+  '
+include: _default_template_yaml
+tag: mmlu_redux_stem_aligned
+task: mmlu_redux_elementary_mathematics_aligned
+task_alias: elementary_mathematics

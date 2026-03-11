@@ -1,0 +1,10 @@
+dataset_name: electrical_engineering
+description: 'The following are multiple choice questions (with answers) about electrical
+  engineering.
+
+
+  '
+include: _default_template_yaml
+tag: mmlu_redux_stem_aligned
+task: mmlu_redux_electrical_engineering_aligned
+task_alias: electrical_engineering
