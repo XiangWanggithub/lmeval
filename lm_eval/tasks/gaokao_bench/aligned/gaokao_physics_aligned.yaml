@@ -1,0 +1,3 @@
+include: _default_template_yaml
+task: gaokao_physics_aligned
+dataset_name: 2010-2022_Physics_MCQs

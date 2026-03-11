@@ -1,0 +1,3 @@
+include: _default_template_yaml
+task: gaokao_chinese_modern_lit_aligned
+dataset_name: 2010-2022_Chinese_Modern_Lit

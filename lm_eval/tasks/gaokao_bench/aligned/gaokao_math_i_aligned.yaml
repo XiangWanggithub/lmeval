@@ -1,0 +1,3 @@
+include: _default_template_yaml
+task: gaokao_math_i_aligned
+dataset_name: 2010-2022_Math_I_MCQs

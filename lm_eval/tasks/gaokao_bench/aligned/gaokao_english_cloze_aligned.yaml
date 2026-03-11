@@ -1,0 +1,3 @@
+include: _default_template_yaml
+task: gaokao_english_cloze_aligned
+dataset_name: 2012-2022_English_Cloze_Test

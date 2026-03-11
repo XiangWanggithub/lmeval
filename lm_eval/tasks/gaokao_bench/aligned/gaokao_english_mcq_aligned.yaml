@@ -1,0 +1,3 @@
+include: _default_template_yaml
+task: gaokao_english_mcq_aligned
+dataset_name: 2010-2013_English_MCQs

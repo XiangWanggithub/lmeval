@@ -1,0 +1,22 @@
+group: gaokao_bench_aligned
+task:
+  - gaokao_biology_aligned
+  - gaokao_chemistry_aligned
+  - gaokao_chinese_lang_aligned
+  - gaokao_chinese_modern_lit_aligned
+  - gaokao_english_cloze_aligned
+  - gaokao_english_fill_blank_aligned
+  - gaokao_english_mcq_aligned
+  - gaokao_english_reading_aligned
+  - gaokao_geography_aligned
+  - gaokao_history_aligned
+  - gaokao_math_i_aligned
+  - gaokao_math_ii_aligned
+  - gaokao_physics_aligned
+  - gaokao_political_science_aligned
+aggregate_metric_list:
+  - metric: exact_match
+    aggregation: mean
+    weight_by_size: true
+metadata:
+  version: 1.0

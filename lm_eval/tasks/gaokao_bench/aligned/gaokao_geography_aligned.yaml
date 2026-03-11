@@ -1,0 +1,3 @@
+include: _default_template_yaml
+task: gaokao_geography_aligned
+dataset_name: 2010-2022_Geography_MCQs
