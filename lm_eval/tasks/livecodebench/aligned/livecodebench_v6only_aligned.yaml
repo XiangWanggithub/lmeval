@@ -1,0 +1,35 @@
+task: livecodebench_v6only_aligned
+dataset_path: livecodebench/code_generation_lite
+dataset_name: v6
+dataset_kwargs:
+  trust_remote_code: true
+output_type: generate_until
+training_split: null
+test_split: test
+num_fewshot: 0
+
+process_docs: !function utils.process_docs
+doc_to_text: !function utils.doc_to_text
+doc_to_target: ""
+
+process_results: !function utils.process_results
+
+generation_kwargs:
+  until:
+    - "\n### Question"
+    - "</s>"
+    - "<|im_end|>"
+    - "<|eot_id|>"
+    - "<|endoftext|>"
+    - "<|return|>"
+  do_sample: false
+  temperature: 0
+  max_gen_toks: 32768
+
+metric_list:
+  - metric: pass_at_1
+    aggregation: mean
+    higher_is_better: true
+
+metadata:
+  version: 1.0
