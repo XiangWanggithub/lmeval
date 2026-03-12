@@ -1,0 +1,6 @@
+include: _default_template_yaml
+tag:
+  - longbench2_aligned_tasks
+  - longbench2_structured_aligned_tasks
+task: longbench2_table_aligned
+dataset_name: table

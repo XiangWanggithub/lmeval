@@ -1,0 +1,13 @@
+group: longbench2_multi_aligned
+group_alias: "Multi-Document QA (Aligned)"
+task:
+  - longbench2_govt_multi_aligned
+  - longbench2_academic_multi_aligned
+  - longbench2_fin_multi_aligned
+  - longbench2_news_multi_aligned
+  - longbench2_legal_multi_aligned
+aggregate_metric_list:
+  - metric: acc
+    weight_by_size: true
+metadata:
+  version: 1.0

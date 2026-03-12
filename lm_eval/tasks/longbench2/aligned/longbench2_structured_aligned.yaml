@@ -1,0 +1,10 @@
+group: longbench2_structured_aligned
+group_alias: "Structured Data (Aligned)"
+task:
+  - longbench2_graph_aligned
+  - longbench2_table_aligned
+aggregate_metric_list:
+  - metric: acc
+    weight_by_size: true
+metadata:
+  version: 1.0

@@ -1,0 +1,6 @@
+include: _default_template_yaml
+tag:
+  - longbench2_aligned_tasks
+  - longbench2_incontext_aligned_tasks
+task: longbench2_many_shot_aligned
+dataset_name: many_shot

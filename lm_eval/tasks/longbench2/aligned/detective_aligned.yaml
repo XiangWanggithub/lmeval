@@ -1,0 +1,6 @@
+include: _default_template_yaml
+tag:
+  - longbench2_aligned_tasks
+  - longbench2_single_aligned_tasks
+task: longbench2_detective_aligned
+dataset_name: detective

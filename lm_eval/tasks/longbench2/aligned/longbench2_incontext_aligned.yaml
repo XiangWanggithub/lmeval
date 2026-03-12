@@ -1,0 +1,11 @@
+group: longbench2_incontext_aligned
+group_alias: "In-Context Learning (Aligned)"
+task:
+  - longbench2_user_guide_aligned
+  - longbench2_translate_aligned
+  - longbench2_many_shot_aligned
+aggregate_metric_list:
+  - metric: acc
+    weight_by_size: true
+metadata:
+  version: 1.0

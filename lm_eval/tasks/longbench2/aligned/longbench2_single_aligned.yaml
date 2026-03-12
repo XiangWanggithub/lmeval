@@ -1,0 +1,15 @@
+group: longbench2_single_aligned
+group_alias: "Single-Document QA (Aligned)"
+task:
+  - longbench2_govt_single_aligned
+  - longbench2_legal_single_aligned
+  - longbench2_lit_single_aligned
+  - longbench2_fin_single_aligned
+  - longbench2_event_order_aligned
+  - longbench2_academic_single_aligned
+  - longbench2_detective_aligned
+aggregate_metric_list:
+  - metric: acc
+    weight_by_size: true
+metadata:
+  version: 1.0

@@ -1,0 +1,5 @@
+include: _default_template_yaml
+tag:
+  - longbench2_aligned_tasks
+task: longbench2_code_aligned
+dataset_name: code_repo_qa

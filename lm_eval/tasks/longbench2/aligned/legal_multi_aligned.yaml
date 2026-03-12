@@ -1,0 +1,6 @@
+include: _default_template_yaml
+tag:
+  - longbench2_aligned_tasks
+  - longbench2_multi_aligned_tasks
+task: longbench2_legal_multi_aligned
+dataset_name: legal_multi_doc

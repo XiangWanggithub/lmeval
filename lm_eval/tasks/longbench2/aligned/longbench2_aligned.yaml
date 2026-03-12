@@ -1,0 +1,14 @@
+group: longbench2_aligned
+group_alias: "LongBench v2 (Aligned)"
+task:
+  - longbench2_single_aligned
+  - longbench2_multi_aligned
+  - longbench2_incontext_aligned
+  - longbench2_history_aligned
+  - longbench2_structured_aligned
+  - longbench2_code_aligned
+aggregate_metric_list:
+  - metric: acc
+    weight_by_size: true
+metadata:
+  version: 1.0

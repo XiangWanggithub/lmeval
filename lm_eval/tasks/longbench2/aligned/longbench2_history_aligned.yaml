@@ -1,0 +1,10 @@
+group: longbench2_history_aligned
+group_alias: "History (Aligned)"
+task:
+  - longbench2_agent_history_aligned
+  - longbench2_dialogue_history_aligned
+aggregate_metric_list:
+  - metric: acc
+    weight_by_size: true
+metadata:
+  version: 1.0
