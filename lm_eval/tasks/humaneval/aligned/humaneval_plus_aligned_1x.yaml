@@ -1,0 +1,3 @@
+include: humaneval_plus_aligned.yaml
+task: humaneval_plus_aligned_1x
+repeats: 1

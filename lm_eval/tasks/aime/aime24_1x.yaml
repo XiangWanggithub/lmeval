@@ -1,0 +1,3 @@
+include: aime24.yaml
+task: aime24_1x
+repeats: 1
