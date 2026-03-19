@@ -17,21 +17,58 @@ from lm_eval.tasks.ruler.common_utils import (
     aggregate_metrics,
 )
 
-# Re-export dataset functions so YAMLs can reference utils.<func> from this dir
-from lm_eval.tasks.ruler.niah_utils import (
-    niah_single_1,
-    niah_single_2,
-    niah_single_3,
-    niah_multikey_1,
-    niah_multikey_2,
-    niah_multikey_3,
-    niah_multiquery,
-    niah_multivalue,
-)
-from lm_eval.tasks.ruler.vt_utils import get_vt_dataset
-from lm_eval.tasks.ruler.cwe_utils import get_cw_dataset
-from lm_eval.tasks.ruler.fwe_utils import fwe_download
-from lm_eval.tasks.ruler.qa_utils import get_squad, get_hotpotqa
+# Re-export dataset functions, filtering out unhashable kwargs (e.g. chat_template_args)
+# that break @cache in get_tokenizer.
+from lm_eval.tasks.ruler import niah_utils as _niah
+from lm_eval.tasks.ruler import vt_utils as _vt
+from lm_eval.tasks.ruler import cwe_utils as _cwe
+from lm_eval.tasks.ruler import fwe_utils as _fwe
+from lm_eval.tasks.ruler import qa_utils as _qa
+
+
+def _clean_kwargs(kwargs):
+    """Remove unhashable values that break @cache in get_tokenizer."""
+    return {k: v for k, v in kwargs.items() if not isinstance(v, (dict, list, set))}
+
+
+def niah_single_1(**kwargs):
+    return _niah.niah_single_1(**_clean_kwargs(kwargs))
+
+def niah_single_2(**kwargs):
+    return _niah.niah_single_2(**_clean_kwargs(kwargs))
+
+def niah_single_3(**kwargs):
+    return _niah.niah_single_3(**_clean_kwargs(kwargs))
+
+def niah_multikey_1(**kwargs):
+    return _niah.niah_multikey_1(**_clean_kwargs(kwargs))
+
+def niah_multikey_2(**kwargs):
+    return _niah.niah_multikey_2(**_clean_kwargs(kwargs))
+
+def niah_multikey_3(**kwargs):
+    return _niah.niah_multikey_3(**_clean_kwargs(kwargs))
+
+def niah_multiquery(**kwargs):
+    return _niah.niah_multiquery(**_clean_kwargs(kwargs))
+
+def niah_multivalue(**kwargs):
+    return _niah.niah_multivalue(**_clean_kwargs(kwargs))
+
+def get_vt_dataset(**kwargs):
+    return _vt.get_vt_dataset(**_clean_kwargs(kwargs))
+
+def get_cw_dataset(**kwargs):
+    return _cwe.get_cw_dataset(**_clean_kwargs(kwargs))
+
+def fwe_download(**kwargs):
+    return _fwe.fwe_download(**_clean_kwargs(kwargs))
+
+def get_squad(**kwargs):
+    return _qa.get_squad(**_clean_kwargs(kwargs))
+
+def get_hotpotqa(**kwargs):
+    return _qa.get_hotpotqa(**_clean_kwargs(kwargs))
 
 eval_logger = logging.getLogger(__name__)
 
