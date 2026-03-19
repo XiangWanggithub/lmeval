@@ -1,6 +1,6 @@
 include: _ruler_aligned_template_yaml
 task: ruler_aligned_cwe
-custom_dataset: !function ../cwe_utils.get_cw_dataset
+custom_dataset: !function utils.get_cw_dataset
 target_delimiter: "\n\n"
 generation_kwargs:
   do_sample: false

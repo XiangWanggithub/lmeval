@@ -1,6 +1,6 @@
 include: _ruler_aligned_template_yaml
 task: ruler_aligned_vt
-custom_dataset: !function ../vt_utils.get_vt_dataset
+custom_dataset: !function utils.get_vt_dataset
 generation_kwargs:
   do_sample: false
   temperature: 0.0

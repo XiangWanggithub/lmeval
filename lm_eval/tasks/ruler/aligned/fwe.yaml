@@ -1,6 +1,6 @@
 include: _ruler_aligned_template_yaml
 task: ruler_aligned_fwe
-custom_dataset: !function ../fwe_utils.fwe_download
+custom_dataset: !function utils.fwe_download
 generation_kwargs:
   do_sample: false
   temperature: 0.0

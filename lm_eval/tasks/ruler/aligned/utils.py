@@ -1,4 +1,8 @@
-"""Ruler aligned utils — adds GPT-OSS channel stripping to Ruler scoring."""
+"""Ruler aligned utils — adds GPT-OSS channel stripping to Ruler scoring.
+
+Also re-exports dataset functions from parent ruler/ so YAML !function
+references resolve from this directory.
+"""
 
 import logging
 import re
@@ -12,6 +16,22 @@ from lm_eval.tasks.ruler.common_utils import (
     string_match_part,
     aggregate_metrics,
 )
+
+# Re-export dataset functions so YAMLs can reference utils.<func> from this dir
+from lm_eval.tasks.ruler.niah_utils import (
+    niah_single_1,
+    niah_single_2,
+    niah_single_3,
+    niah_multikey_1,
+    niah_multikey_2,
+    niah_multikey_3,
+    niah_multiquery,
+    niah_multivalue,
+)
+from lm_eval.tasks.ruler.vt_utils import get_vt_dataset
+from lm_eval.tasks.ruler.cwe_utils import get_cw_dataset
+from lm_eval.tasks.ruler.fwe_utils import fwe_download
+from lm_eval.tasks.ruler.qa_utils import get_squad, get_hotpotqa
 
 eval_logger = logging.getLogger(__name__)
 

@@ -1,6 +1,6 @@
 include: _ruler_aligned_template_yaml
 task: ruler_aligned_qa_squad
-custom_dataset: !function ../qa_utils.get_squad
+custom_dataset: !function utils.get_squad
 process_results: !function utils.process_results_part
 generation_kwargs:
   do_sample: false
