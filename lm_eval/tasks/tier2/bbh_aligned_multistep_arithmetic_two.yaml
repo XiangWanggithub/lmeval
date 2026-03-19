@@ -1,0 +1,3 @@
+include: ../bbh/aligned/multistep_arithmetic_two.yaml
+task: tier2_bbh_aligned_multistep_arithmetic_two
+process_docs: !function utils.filter_bbh_aligned_multistep_arithmetic_two

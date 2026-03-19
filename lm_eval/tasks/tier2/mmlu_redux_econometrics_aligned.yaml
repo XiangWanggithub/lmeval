@@ -1,0 +1,3 @@
+include: ../mmlu-redux/aligned/mmlu_econometrics.yaml
+task: tier2_mmlu_redux_econometrics_aligned
+process_docs: !function utils.filter_mmlu_redux_econometrics_aligned

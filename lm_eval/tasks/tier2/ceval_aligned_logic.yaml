@@ -1,0 +1,3 @@
+include: ../ceval/aligned/ceval_logic.yaml
+task: tier2_ceval_aligned_logic
+process_docs: !function utils.filter_ceval_aligned_logic

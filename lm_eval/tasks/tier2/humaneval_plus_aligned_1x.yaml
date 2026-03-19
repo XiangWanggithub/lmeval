@@ -1,0 +1,3 @@
+include: ../humaneval/aligned/humaneval_plus_aligned_1x.yaml
+task: tier2_humaneval_plus_aligned_1x
+process_docs: !function utils.filter_humaneval_plus_aligned_1x

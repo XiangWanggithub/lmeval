@@ -1,0 +1,3 @@
+include: ../bbh/aligned/tracking_shuffled_objects_seven_objects.yaml
+task: tier2_bbh_aligned_tracking_shuffled_objects_seven_objects
+process_docs: !function utils.filter_bbh_aligned_tracking_shuffled_objects_seven_objects

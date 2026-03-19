@@ -1,0 +1,3 @@
+include: ../mmlu_pro/aligned/mmlu_pro_computer_science.yaml
+task: tier2_mmlu_pro_computer_science_aligned
+process_docs: !function utils.filter_mmlu_pro_computer_science_aligned

@@ -1,0 +1,3 @@
+include: ../aime/aime24_1x.yaml
+task: tier2_aime24_1x
+process_docs: !function utils.filter_aime24_1x

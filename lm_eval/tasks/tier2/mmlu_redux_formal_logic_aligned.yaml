@@ -1,0 +1,3 @@
+include: ../mmlu-redux/aligned/mmlu_formal_logic.yaml
+task: tier2_mmlu_redux_formal_logic_aligned
+process_docs: !function utils.filter_mmlu_redux_formal_logic_aligned

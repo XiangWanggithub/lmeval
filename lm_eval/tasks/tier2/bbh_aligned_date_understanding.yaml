@@ -1,0 +1,3 @@
+include: ../bbh/aligned/date_understanding.yaml
+task: tier2_bbh_aligned_date_understanding
+process_docs: !function utils.filter_bbh_aligned_date_understanding

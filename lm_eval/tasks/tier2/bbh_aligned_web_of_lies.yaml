@@ -1,0 +1,3 @@
+include: ../bbh/aligned/web_of_lies.yaml
+task: tier2_bbh_aligned_web_of_lies
+process_docs: !function utils.filter_bbh_aligned_web_of_lies

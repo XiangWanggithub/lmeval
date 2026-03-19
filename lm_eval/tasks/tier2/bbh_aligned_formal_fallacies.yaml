@@ -1,0 +1,3 @@
+include: ../bbh/aligned/formal_fallacies.yaml
+task: tier2_bbh_aligned_formal_fallacies
+process_docs: !function utils.filter_bbh_aligned_formal_fallacies

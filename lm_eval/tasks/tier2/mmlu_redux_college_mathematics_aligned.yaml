@@ -1,0 +1,3 @@
+include: ../mmlu-redux/aligned/mmlu_college_mathematics.yaml
+task: tier2_mmlu_redux_college_mathematics_aligned
+process_docs: !function utils.filter_mmlu_redux_college_mathematics_aligned

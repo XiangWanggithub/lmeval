@@ -1,0 +1,3 @@
+include: ../mmlu_pro/aligned/mmlu_pro_math.yaml
+task: tier2_mmlu_pro_math_aligned
+process_docs: !function utils.filter_mmlu_pro_math_aligned

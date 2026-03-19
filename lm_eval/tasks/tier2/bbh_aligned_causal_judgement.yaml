@@ -1,0 +1,3 @@
+include: ../bbh/aligned/causal_judgement.yaml
+task: tier2_bbh_aligned_causal_judgement
+process_docs: !function utils.filter_bbh_aligned_causal_judgement

@@ -1,0 +1,3 @@
+include: ../livecodebench/aligned/livecodebench_v6only_aligned.yaml
+task: tier2_livecodebench_v6only_aligned
+process_docs: !function utils.filter_livecodebench_v6only_aligned

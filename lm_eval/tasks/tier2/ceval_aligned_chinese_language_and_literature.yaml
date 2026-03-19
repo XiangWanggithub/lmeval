@@ -1,0 +1,3 @@
+include: ../ceval/aligned/ceval_chinese_language_and_literature.yaml
+task: tier2_ceval_aligned_chinese_language_and_literature
+process_docs: !function utils.filter_ceval_aligned_chinese_language_and_literature

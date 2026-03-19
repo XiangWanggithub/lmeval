@@ -1,0 +1,31 @@
+group: tier2
+task:
+  - tier2_aime24_1x
+  - tier2_humaneval_plus_aligned_1x
+  - tier2_gpqa_diamond_aligned_1x
+  - tier2_mmlu_pro_math_aligned
+  - tier2_mmlu_pro_physics_aligned
+  - tier2_mmlu_pro_computer_science_aligned
+  - tier2_mmlu_redux_formal_logic_aligned
+  - tier2_mmlu_redux_econometrics_aligned
+  - tier2_mmlu_redux_college_mathematics_aligned
+  - tier2_ceval_aligned_advanced_mathematics
+  - tier2_ceval_aligned_chinese_language_and_literature
+  - tier2_ceval_aligned_logic
+  - tier2_livecodebench_v6only_aligned
+  - tier2_bbh_aligned_boolean_expressions
+  - tier2_bbh_aligned_causal_judgement
+  - tier2_bbh_aligned_date_understanding
+  - tier2_bbh_aligned_formal_fallacies
+  - tier2_bbh_aligned_logical_deduction_seven_objects
+  - tier2_bbh_aligned_multistep_arithmetic_two
+  - tier2_bbh_aligned_navigate
+  - tier2_bbh_aligned_object_counting
+  - tier2_bbh_aligned_tracking_shuffled_objects_seven_objects
+  - tier2_bbh_aligned_web_of_lies
+aggregate_metric_list:
+  - aggregation: mean
+    metric: exact_match
+    weight_by_size: true
+metadata:
+  version: 1.0
