@@ -1,0 +1,14 @@
+include: ../niah_single_1.yaml
+process_results: !function utils.process_results
+generation_kwargs:
+  do_sample: false
+  temperature: 0.0
+  max_gen_toks: 128
+  until:
+    - "</s>"
+    - "<|im_end|>"
+    - "<|eot_id|>"
+    - "<|endoftext|>"
+    - "<|return|>"
+metadata:
+  version: 1.0

@@ -1,0 +1,3 @@
+include: _ruler_aligned_template_yaml
+task: ruler_aligned_niah_multikey_2
+custom_dataset: !function ../niah_utils.niah_multikey_2
