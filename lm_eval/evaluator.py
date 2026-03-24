@@ -622,9 +622,25 @@ def evaluate(
             for doc_id, doc in doc_iterator:
                 doc_id_true = indices[doc_id] if indices else doc_id
                 requests = instances_by_doc_id[doc_id]
-                metrics = task.process_results(
-                    doc, [req.filtered_resps[filter_key] for req in requests]
-                )
+                if (
+                    getattr(task.config, "repeats_mode", "take_first") == "average"
+                    and task.config.repeats > 1
+                ):
+                    k = len(requests[0].resps)
+                    per_repeat = [
+                        task.process_results(
+                            doc, [req.resps[i] for req in requests]
+                        )
+                        for i in range(k)
+                    ]
+                    metrics = {
+                        m: sum(r[m] for r in per_repeat) / k
+                        for m in per_repeat[0]
+                    }
+                else:
+                    metrics = task.process_results(
+                        doc, [req.filtered_resps[filter_key] for req in requests]
+                    )
                 if log_samples:
                     target = task.doc_to_target(doc)
                     example = {

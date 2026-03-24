@@ -119,6 +119,7 @@ class TaskConfig(dict):
     output_type: OutputType = "generate_until"
     generation_kwargs: dict | None = None
     repeats: int = 1
+    repeats_mode: str = "take_first"  # "take_first" | "average"
     filter_list: str | list | None = None
     should_decontaminate: bool = False
     doc_to_decontamination_query: str | None = None
