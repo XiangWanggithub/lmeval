@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import itertools
 import json
 import logging
@@ -576,7 +577,35 @@ def evaluate(
         # create `K` copies of each request `req` based off `K = req.repeats`
         cloned_reqs = []
         for req in reqs:
-            cloned_reqs.extend([req] * req.repeats)
+            # For repeats_mode=average with generate_until, inject per-repeat
+            # seeds so that sampling produces diverse outputs even with a fixed
+            # global seed.  Clones share req.resps (shallow copy) so all K
+            # responses still accumulate on the original instance.
+            task_obj = eval_results_acc.get(req.task_name, {}).get("task")
+            needs_diverse = (
+                reqtype == "generate_until"
+                and req.repeats > 1
+                and task_obj is not None
+                and getattr(task_obj.config, "repeats_mode", "take_first") == "average"
+                and isinstance(req.args, tuple)
+                and len(req.args) > 1
+                and isinstance(req.args[1], dict)
+            )
+            if needs_diverse:
+                ctx, orig_kwargs = req.args
+                base_seed = orig_kwargs.get("seed", 0)
+                for i in range(req.repeats):
+                    new_kwargs = dict(orig_kwargs)
+                    new_kwargs["seed"] = base_seed + i
+                    if i == 0:
+                        req.args = (ctx, new_kwargs)
+                        cloned_reqs.append(req)
+                    else:
+                        clone = copy.copy(req)
+                        clone.args = (ctx, new_kwargs)
+                        cloned_reqs.append(clone)
+            else:
+                cloned_reqs.extend([req] * req.repeats)
 
         if (lm.world_size > 1) and (padding_requests[reqtype] > 0):
             for _ in range(padding_requests[reqtype]):
