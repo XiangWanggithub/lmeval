@@ -28,8 +28,8 @@ generation_kwargs:
     - "<|endoftext|>"
     - "<|return|>"
   max_gen_toks: 32768
-  do_sample: false
-  temperature: 0
+  do_sample: true
+  temperature: 0.6
 
 num_fewshot: 0
 repeats: 10

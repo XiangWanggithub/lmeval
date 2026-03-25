@@ -16,8 +16,8 @@ generation_kwargs:
     - "<|eot_id|>"
     - "<|endoftext|>"
     - "<|return|>"
-  do_sample: false
-  temperature: 0
+  do_sample: true
+  temperature: 0.6
   max_gen_toks: 32768
 metric_list:
   - metric: exact_match
