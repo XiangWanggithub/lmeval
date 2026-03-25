@@ -629,7 +629,7 @@ def evaluate(
                     k = len(requests)
                     per_repeat = [
                         task.process_results(
-                            doc, req.filtered_resps[filter_key]
+                            doc, [req.filtered_resps[filter_key]]
                         )
                         for req in requests
                     ]
