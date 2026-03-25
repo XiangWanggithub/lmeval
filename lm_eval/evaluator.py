@@ -626,12 +626,12 @@ def evaluate(
                     getattr(task.config, "repeats_mode", "take_first") == "average"
                     and task.config.repeats > 1
                 ):
-                    k = len(requests)
+                    k = len(requests[0].resps)
                     per_repeat = [
                         task.process_results(
-                            doc, [req.filtered_resps[filter_key]]
+                            doc, [requests[0].resps[i]]
                         )
-                        for req in requests
+                        for i in range(k)
                     ]
                     metrics = {
                         m: sum(r[m] for r in per_repeat) / k
