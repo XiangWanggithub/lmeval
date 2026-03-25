@@ -598,11 +598,11 @@ def evaluate(
                     new_kwargs = dict(orig_kwargs)
                     new_kwargs["seed"] = base_seed + i
                     if i == 0:
-                        req.args = (ctx, new_kwargs)
+                        req.arguments = (ctx, new_kwargs)
                         cloned_reqs.append(req)
                     else:
                         clone = copy.copy(req)
-                        clone.args = (ctx, new_kwargs)
+                        clone.arguments = (ctx, new_kwargs)
                         cloned_reqs.append(clone)
             else:
                 cloned_reqs.extend([req] * req.repeats)
