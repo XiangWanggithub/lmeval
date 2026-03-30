@@ -14,7 +14,7 @@ eval_logger = logging.getLogger(__name__)
 # Path to sensitive_samples.json — configurable via env var
 SENSITIVE_SAMPLES_PATH = os.environ.get(
     "TIER2_SAMPLES_PATH",
-    os.path.join(os.path.dirname(__file__), "..", "..", "..", "..",
+    os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "..",
                  "eval_results", "sensitivity_filtering", "fm_gptq",
                  "sensitive_samples.json")
 )
@@ -68,22 +68,62 @@ def _make_filter(task_name):
     return _filter
 
 
-# Pre-generate filter functions for all tasks
+# Tasks requiring chaining: base process_docs must run before tier2 filtering.
+# When tier2 YAMLs override process_docs, they REPLACE (not chain) the base.
+# Any task whose base process_docs (a) creates new fields for doc_to_text, or
+# (b) filters/reindexes the dataset (so IDs are relative to filtered dataset)
+# must be handled here explicitly.
+
+# GPQA: base process_docs renames raw columns ("Incorrect Answer 1" etc.) into
+# choice1-4 fields used by the Jinja doc_to_text template.
+def filter_gpqa_diamond_aligned_1x(dataset):
+    from lm_eval.tasks.gpqa.aligned import utils as _gpqa_utils
+    dataset = _gpqa_utils.process_docs(dataset)
+    return filter_tier2(dataset, "gpqa_diamond_aligned_1x")
+
+
+# LiveCodeBench: base process_docs creates format_prompt field used by doc_to_text.
+def filter_livecodebench_v6only_aligned(dataset):
+    from lm_eval.tasks.livecodebench.aligned import utils as _lcb_utils
+    dataset = _lcb_utils.process_docs(dataset)
+    return filter_tier2(dataset, "livecodebench_v6only_aligned")
+
+
+# MMLU-Pro: base process_docs filters dataset to a single subject category.
+# Tier2 IDs are indices into the subject-filtered dataset, so subject filtering
+# must run before the tier2 index selection.
+def filter_mmlu_pro_math_aligned(dataset):
+    from lm_eval.tasks.mmlu_pro.aligned.utils import process_math
+    dataset = process_math(dataset)
+    return filter_tier2(dataset, "mmlu_pro_math_aligned")
+
+
+def filter_mmlu_pro_physics_aligned(dataset):
+    from lm_eval.tasks.mmlu_pro.aligned.utils import process_physics
+    dataset = process_physics(dataset)
+    return filter_tier2(dataset, "mmlu_pro_physics_aligned")
+
+
+def filter_mmlu_pro_computer_science_aligned(dataset):
+    from lm_eval.tasks.mmlu_pro.aligned.utils import process_computer_science
+    dataset = process_computer_science(dataset)
+    return filter_tier2(dataset, "mmlu_pro_computer_science_aligned")
+
+
+# Pre-generate filter functions for tasks that don't need base process_docs chaining
 _TASK_NAMES = [
     "aime24_1x",
     "ifeval_aligned",
     "humaneval_plus_aligned_1x",
-    "gpqa_diamond_aligned_1x",
-    "mmlu_pro_math_aligned",
-    "mmlu_pro_physics_aligned",
-    "mmlu_pro_computer_science_aligned",
+    # gpqa_diamond_aligned_1x handled separately above (needs base process_docs chaining)
+    # mmlu_pro_* handled separately above (needs subject filter chaining)
+    # livecodebench_v6only_aligned handled separately above (needs format_prompt creation)
     "mmlu_redux_formal_logic_aligned",
     "mmlu_redux_econometrics_aligned",
     "mmlu_redux_college_mathematics_aligned",
     "ceval_aligned_advanced_mathematics",
     "ceval_aligned_chinese_language_and_literature",
     "ceval_aligned_logic",
-    "livecodebench_v6only_aligned",
     "bbh_aligned_boolean_expressions",
     "bbh_aligned_causal_judgement",
     "bbh_aligned_date_understanding",

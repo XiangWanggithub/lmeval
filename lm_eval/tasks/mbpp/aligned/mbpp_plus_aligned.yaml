@@ -33,6 +33,7 @@ generation_kwargs:
 
 num_fewshot: 0
 repeats: 10
+repeats_mode: average
 
 metadata:
   version: 1.0

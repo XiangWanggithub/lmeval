@@ -169,19 +169,20 @@ def extract_choices_multi(response: str, expected_count: int) -> list[str | None
 
     # Strategy 1: Comma/space-separated answer list
     # Match: 答案：A, B, C  or  答案：A B C  or  ANSWER: A, B, C
+    # Note: [A-G] covers cloze tests (7 options) as well as standard MCQ (4 options A-D)
     m = re.search(
-        r"(?:答案\s*[：:是]|[Aa][Nn][Ss][Ww][Ee][Rr]\s*:)\s*([A-D](?:\s*[,，、\s]\s*[A-D])*)",
+        r"(?:答案\s*[：:是]|[Aa][Nn][Ss][Ww][Ee][Rr]\s*:)\s*([A-G](?:\s*[,，、\s]\s*[A-G])*)",
         response,
     )
     if m:
-        letters = re.findall(r"[A-D]", m.group(1))
+        letters = re.findall(r"[A-G]", m.group(1))
         if len(letters) == expected_count:
             return [l.upper() for l in letters]
 
     # Strategy 2: Numbered sub-question answers
     # Match patterns like: "1. A", "1、A", "1：A", "第1题 A", "(1) A"
     numbered = re.findall(
-        r"(?:(?:第?\s*(\d+)\s*[.、：:题)）]\s*)|(?:\((\d+)\)\s*))([A-D])",
+        r"(?:(?:第?\s*(\d+)\s*[.、：:题)）]\s*)|(?:\((\d+)\)\s*))([A-G])",
         response,
     )
     if numbered:
@@ -192,8 +193,8 @@ def extract_choices_multi(response: str, expected_count: int) -> list[str | None
         if all(a is not None for a in answers):
             return answers
 
-    # Strategy 3: Find all standalone A-D letters in order
-    all_letters = re.findall(r"(?:^|\s)\(?([A-D])\)?(?:\s|$|[.。，,])", response, re.MULTILINE)
+    # Strategy 3: Find all standalone A-G letters in order
+    all_letters = re.findall(r"(?:^|\s)\(?([A-G])\)?(?:\s|$|[.。，,])", response, re.MULTILINE)
     if len(all_letters) >= expected_count:
         # Take the last N letters (model's final answers)
         return [l.upper() for l in all_letters[-expected_count:]]
