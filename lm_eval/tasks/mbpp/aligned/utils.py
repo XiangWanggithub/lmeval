@@ -5,12 +5,16 @@ Implements evalscope's 3-stage code extraction pipeline:
 2. Incomplete fenced code blocks (``` without closing)
 3. Heuristic extraction (detect def/class patterns)
 
-Plus post-processing: strip [DONE], stop at \\nassert/\\n\"\"\", remove __main__.
+Plus post-processing: strip [DONE], stop at \nassert/\n\"\"\", remove __main__.
 Channel-aware: strips GPT-OSS analysis channel before code extraction.
+
+Uses process_results (not filter_list + metric_list) so that repeats_mode=average
+works correctly. lm_eval's repeats_mode=average path bypasses filters and calls
+process_results directly with raw model output — so all extraction logic must live
+inside process_results.
 """
 
 import re
-from typing import Union
 
 import evaluate as hf_evaluate
 
@@ -19,25 +23,13 @@ from lm_eval.tasks._gptoss_utils import extract_final_channel
 
 try:
     pass_at_k = hf_evaluate.load("code_eval")
+
+    # run simple test to check code execution is enabled before model generation
     test_cases = ["assert add(2, 3)==5"]
     candidates = [["def add(a,b): return a*b"]]
     results = pass_at_k.compute(references=test_cases, predictions=candidates, k=[1])
 except Exception as e:
     raise e
-
-
-def pass_at_1(
-    references: Union[str, list[str]], predictions: Union[str, list[list[str]]]
-) -> float:
-    if isinstance(references, str):
-        references = [references]
-    if isinstance(predictions[0], str):
-        predictions = [[p] for p in predictions]
-    return pass_at_k.compute(
-        references=references,
-        predictions=predictions,
-        k=[1],
-    )[0]["pass@1"]
 
 
 # ---------------------------------------------------------------------------
@@ -51,12 +43,6 @@ _INCOMPLETE_FENCED_PATTERN = re.compile(
     r"```([^\n]*)\n(.*)", re.DOTALL | re.MULTILINE
 )
 _PYTHON_ALIASES = {"python", "Python", "py", "Python3", "python3", "PY"}
-_HEURISTIC_PATTERN = re.compile(
-    r"(?:^(?:import|from|#)[^\n]+\n)*"
-    r"^(?:def|class) [^\n]+\n"
-    r"(?:\s+[^\n]+\n)+",
-    re.MULTILINE,
-)
 _STOP_WORDS = ["\nassert", '\n"""']
 
 
@@ -114,6 +100,35 @@ def extract_code(completion: str) -> str:
     return code
 
 
-def build_predictions(resps: list[list[str]], docs: list[dict]) -> list[list[str]]:
-    """Filter function for lm-eval: extract code from each response."""
-    return [[extract_code(extract_final_channel(r)) for r in resp] for resp, doc in zip(resps, docs)]
+# ---------------------------------------------------------------------------
+# process_results — lm-eval entry point (called once per repeat)
+# ---------------------------------------------------------------------------
+
+def process_results(doc: dict, results: list) -> dict:
+    """Evaluate one candidate generation for pass@1.
+
+    lm_eval calls this once per (doc, repeat) with the raw model output in
+    results[0]. With repeats_mode=average and repeats=N, this is called N times
+    per doc; lm_eval then averages the N binary 0/1 results to get the pass rate
+    (equivalent to pass@1 estimated with N samples).
+
+    Handles GPT-OSS channel-tagged output transparently.
+    """
+    response = extract_final_channel(results[0])
+    code = extract_code(response)
+
+    if not code.strip():
+        return {"pass_at_1": 0.0}
+
+    # MBPP test reference: concatenated test_list assertions
+    test_case = "\n".join(doc["test_list"])
+
+    try:
+        res, _ = pass_at_k.compute(
+            references=[test_case],
+            predictions=[[code]],
+            k=[1],
+        )
+        return {"pass_at_1": res["pass@1"]}
+    except Exception:
+        return {"pass_at_1": 0.0}

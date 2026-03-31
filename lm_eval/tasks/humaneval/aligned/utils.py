@@ -6,10 +6,14 @@ Key difference from stock lm-eval HumanEval:
 - Always prepends doc["prompt"] to extracted code for test assembly
   (Python allows redefining functions, so prompt + complete_function works)
 - Channel-aware: strips GPT-OSS analysis channel before code extraction
+
+Uses process_results (not filter_list + metric_list) so that repeats_mode=average
+works correctly. lm_eval's repeats_mode=average path bypasses filters and calls
+process_results directly with raw model output — so all extraction logic must live
+inside process_results.
 """
 
 import re
-from typing import Union
 
 import evaluate as hf_evaluate
 
@@ -25,41 +29,6 @@ except Exception as e:
     raise e
 
 
-def pass_at_k(
-    references: Union[str, list[str]],
-    predictions: Union[list[str], list[list[str]]],
-    k: Union[int, list[int]] = None,
-):
-    """Compute pass@k.
-
-    lm_eval calls this per-document:
-      references  = str          (single reference test)
-      predictions = list[str]    (N candidates for that doc)
-
-    code_eval.compute() requires the batched form:
-      references  = list[str]          (one per problem)
-      predictions = list[list[str]]    (one inner list of candidates per problem)
-
-    Normalise both cases here.
-    """
-    global compute_
-    assert k is not None
-    if isinstance(k, int):
-        k = [k]
-    # Normalise per-doc inputs → batch-of-1
-    if isinstance(references, str):
-        references = [references]
-    if predictions and isinstance(predictions[0], str):
-        predictions = [predictions]
-    res = compute_.compute(
-        references=references,
-        predictions=predictions,
-        k=k,
-    )
-    results_dict = res[0]  # {"pass@1": float, ...}
-    return results_dict[f"pass@{k[0]}"]
-
-
 # ---------------------------------------------------------------------------
 # 3-stage code extraction (aligned with evalscope)
 # ---------------------------------------------------------------------------
@@ -71,12 +40,6 @@ _INCOMPLETE_FENCED_PATTERN = re.compile(
     r"```([^\n]*)\n(.*)", re.DOTALL | re.MULTILINE
 )
 _PYTHON_ALIASES = {"python", "Python", "py", "Python3", "python3", "PY"}
-_HEURISTIC_PATTERN = re.compile(
-    r"(?:^(?:import|from|#)[^\n]+\n)*"
-    r"^(?:def|class) [^\n]+\n"
-    r"(?:\s+[^\n]+\n)+",
-    re.MULTILINE,
-)
 
 
 def extract_code(completion: str) -> str:
@@ -122,13 +85,38 @@ def extract_code(completion: str) -> str:
     return code
 
 
-def build_predictions(
-    resps: list[list[str]], docs: list[dict]
-) -> list[list[str]]:
-    """Extract code and prepend doc prompt for test assembly.
+# ---------------------------------------------------------------------------
+# process_results — lm-eval entry point (called once per repeat)
+# ---------------------------------------------------------------------------
 
-    Evalscope always prepends prompt (function signature) to completion.
-    Python allows redefining functions, so prompt + complete_function works:
-    the model's definition overrides the incomplete one from prompt.
+def process_results(doc: dict, results: list) -> dict:
+    """Evaluate one candidate generation for pass@1.
+
+    lm_eval calls this once per (doc, repeat) with the raw model output in
+    results[0]. With repeats_mode=average and repeats=N, this is called N times
+    per doc; lm_eval then averages the N binary 0/1 results to get the pass rate
+    (equivalent to pass@1 estimated with N samples).
+
+    Handles GPT-OSS channel-tagged output transparently.
     """
-    return [[doc["prompt"] + extract_code(extract_final_channel(r)) for r in resp] for resp, doc in zip(resps, docs)]
+    response = extract_final_channel(results[0])
+    extracted = extract_code(response)
+    # Prepend the function signature/docstring so the definition is complete.
+    # Python allows redefining functions — the model's definition overrides the
+    # partial one from the prompt.
+    code = doc["prompt"] + extracted
+
+    if not extracted.strip():
+        return {"pass_at_1": 0.0}
+
+    test_case = doc["test"] + "\ncheck(" + doc["entry_point"] + ")"
+
+    try:
+        res, _ = compute_.compute(
+            references=[test_case],
+            predictions=[[code]],
+            k=[1],
+        )
+        return {"pass_at_1": res["pass@1"]}
+    except Exception:
+        return {"pass_at_1": 0.0}
