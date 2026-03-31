@@ -10,17 +10,23 @@ except Exception as e:
     raise e
 
 
-def pass_at_k(references: list[str], predictions: list[list[str]], k: list[int] = None):
+def pass_at_k(references, predictions, k: list[int] = None):
     global compute_
     assert k is not None
     if isinstance(k, int):
         k = [k]
+    # lm_eval calls per-doc: references=str, predictions=list[str]
+    # code_eval expects: references=list[str], predictions=list[list[str]]
+    if isinstance(references, str):
+        references = [references]
+    if predictions and isinstance(predictions[0], str):
+        predictions = [predictions]
     res = compute_.compute(
         references=references,
         predictions=predictions,
         k=k,
     )
-    return res[0]
+    return res[0][f"pass@{k[0]}"]
 
 
 def build_predictions(resps: list[list[str]], docs: list[dict]) -> list[list[str]]:

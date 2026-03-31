@@ -26,18 +26,38 @@ except Exception as e:
 
 
 def pass_at_k(
-    references: list[str], predictions: list[list[str]], k: list[int] = None
+    references: Union[str, list[str]],
+    predictions: Union[list[str], list[list[str]]],
+    k: Union[int, list[int]] = None,
 ):
+    """Compute pass@k.
+
+    lm_eval calls this per-document:
+      references  = str          (single reference test)
+      predictions = list[str]    (N candidates for that doc)
+
+    code_eval.compute() requires the batched form:
+      references  = list[str]          (one per problem)
+      predictions = list[list[str]]    (one inner list of candidates per problem)
+
+    Normalise both cases here.
+    """
     global compute_
     assert k is not None
     if isinstance(k, int):
         k = [k]
+    # Normalise per-doc inputs → batch-of-1
+    if isinstance(references, str):
+        references = [references]
+    if predictions and isinstance(predictions[0], str):
+        predictions = [predictions]
     res = compute_.compute(
         references=references,
         predictions=predictions,
         k=k,
     )
-    return res[0]
+    results_dict = res[0]  # {"pass@1": float, ...}
+    return results_dict[f"pass@{k[0]}"]
 
 
 # ---------------------------------------------------------------------------
