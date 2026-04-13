@@ -115,13 +115,45 @@ def handle_cli_value_string(arg: str) -> bool | int | float | dict | str:
             return arg
 
 
+def _bracket_aware_split(s: str) -> list[str]:
+    """Split on commas that are not inside { } or [ ] brackets.
+
+    Allows values that are JSON dicts/lists (e.g.
+    ``speculative_config={"method":"mtp","num_speculative_tokens":1}``) to be
+    passed without the inner commas being treated as argument separators.
+    """
+    parts: list[str] = []
+    depth = 0
+    current: list[str] = []
+    for ch in s:
+        if ch in "{[(":
+            depth += 1
+            current.append(ch)
+        elif ch in "}])":
+            depth -= 1
+            current.append(ch)
+        elif ch == "," and depth == 0:
+            if current:
+                parts.append("".join(current))
+            current = []
+        else:
+            current.append(ch)
+    if current:
+        parts.append("".join(current))
+    return parts
+
+
 def key_val_to_dict(args: str) -> dict[str, Any]:
-    """Parse model arguments from a string into a dictionary."""
+    """Parse model arguments from a string into a dictionary.
+
+    Commas inside JSON dict/list values (e.g. speculative_config={...}) are
+    handled correctly — only top-level commas are treated as separators.
+    """
     res = {}
     if not args:
         return res
 
-    for k, v in (item.split("=", 1) for item in args.split(",")):
+    for k, v in (item.split("=", 1) for item in _bracket_aware_split(args)):
         v = handle_cli_value_string(v)
         if k in res:
             eval_logger.warning(f"Overwriting key '{k}': {res[k]!r} -> {v!r}")
