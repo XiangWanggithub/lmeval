@@ -224,18 +224,49 @@ def sanitize_list(sub):
         return str(sub)
 
 
+def _split_args_string(args_string: str) -> list[str]:
+    """Split a model_args string on commas that are not inside brackets.
+
+    This allows values that are JSON dicts or lists (e.g.
+    ``speculative_config={"method":"mtp","num_speculative_tokens":1}``) to be
+    passed without the inner commas being treated as argument separators.
+    """
+    parts: list[str] = []
+    depth = 0
+    current: list[str] = []
+    for ch in args_string:
+        if ch in "{[(":
+            depth += 1
+            current.append(ch)
+        elif ch in "}])":
+            depth -= 1
+            current.append(ch)
+        elif ch == "," and depth == 0:
+            if current:
+                parts.append("".join(current))
+            current = []
+        else:
+            current.append(ch)
+    if current:
+        parts.append("".join(current))
+    return parts
+
+
 def simple_parse_args_string(args_string: str | None) -> dict:
     """
     Parses something like
         args1=val1,arg2=val2
-    Into a dictionary
+    Into a dictionary.
+
+    Commas inside JSON dict/list values (e.g. speculative_config={...}) are
+    handled correctly — only top-level commas are treated as separators.
     """
     if args_string is None:
         return {}
     args_string = args_string.strip()
     if not args_string:
         return {}
-    arg_list = [arg for arg in args_string.split(",") if arg]
+    arg_list = [arg for arg in _split_args_string(args_string) if arg]
     args_dict = {
         kv[0]: handle_arg_string("=".join(kv[1:]))
         for kv in [arg.split("=") for arg in arg_list]
